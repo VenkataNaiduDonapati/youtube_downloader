@@ -3,6 +3,7 @@ from fastapi.responses import StreamingResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.background import BackgroundTask
 import subprocess, os, re, yt_dlp, shutil, platform
+import shutil
 import os
 
 cookies_path = "cookies.txt"
@@ -52,6 +53,7 @@ def metadata(url: str = Query(...)):
 
 @app.get("/download")
 def download(url: str, format_id: str = Query("best")):
+    ffmpeg_path = shutil.which("ffmpeg")
     try:
         # Fetch metadata for filename
         with yt_dlp.YoutubeDL({'quiet': True}) as ydl:
@@ -71,7 +73,7 @@ def download(url: str, format_id: str = Query("best")):
             "yt-dlp",
             "-f", f"{format_id}",
             "-o", filepath,
-            "--ffmpeg-location", os.path.join(BASE_DIR, "ffmpeg.exe"),
+            "--ffmpeg-location", ffmpeg_path,
             "--concurrent-fragments", "16",
             "--extractor-args", "youtube:player_client=default",
             "--cookies", cookies_path,
@@ -130,6 +132,7 @@ def download(url: str, format_id: str = Query("best")):
 # Serve static frontend
 
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
+
 
 
 
