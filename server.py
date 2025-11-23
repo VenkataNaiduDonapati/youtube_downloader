@@ -3,6 +3,11 @@ from fastapi.responses import StreamingResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.background import BackgroundTask
 import subprocess, os, re, yt_dlp, shutil, platform
+import os
+
+cookies_path = "cookies.txt"
+with open(cookies_path, "w") as f:
+    f.write(os.environ.get("YOUTUBE_COOKIES", ""))
 
 app = FastAPI()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -21,7 +26,7 @@ def get_aria2_path():
 @app.get("/metadata")
 def metadata(url: str = Query(...)):
     try:
-        ydl_opts = {'quiet': True,"cookiefile": "cookies.txt"}
+        ydl_opts = {'quiet': True,"cookiefile": cookies_path}
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
 
@@ -126,6 +131,7 @@ def download(url: str, format_id: str = Query("best")):
 # Serve static frontend
 
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
+
 
 
 
