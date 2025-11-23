@@ -6,8 +6,6 @@ import subprocess, os, re, yt_dlp, shutil, platform
 import os
 
 cookies_path = "cookies.txt"
-with open(cookies_path, "w") as f:
-    f.write(os.environ.get("YOUTUBE_COOKIES", ""))
 
 app = FastAPI()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -131,6 +129,7 @@ def download(url: str, format_id: str = Query("best")):
 # Serve static frontend
 
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
+
 
 
 
