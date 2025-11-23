@@ -76,7 +76,7 @@ def download(url: str, format_id: str = Query("best")):
             "--ffmpeg-location", ffmpeg_path,
             "--concurrent-fragments", "16",
             "--extractor-args", "youtube:player_client=default",
-            "--cookies", cookies_path,
+            "--cookies-from-browser", "edge",
             "--force-overwrites",
             "--no-cache-dir",
         ]
@@ -132,6 +132,7 @@ def download(url: str, format_id: str = Query("best")):
 # Serve static frontend
 
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
+
 
 
 
