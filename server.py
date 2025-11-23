@@ -54,7 +54,7 @@ def metadata(url: str = Query(...)):
 def download(url: str, format_id: str = Query("best")):
     try:
         # Fetch metadata for filename
-        with yt_dlp.YoutubeDL({'quiet': True,"cookiefile": "cookies.txt"}) as ydl:
+        with yt_dlp.YoutubeDL({'quiet': True,"cookiefile": cookies_path}) as ydl:
             info = ydl.extract_info(url, download=False)
             title = sanitize_filename(info.get("title", "video"))
 
@@ -129,6 +129,7 @@ def download(url: str, format_id: str = Query("best")):
 # Serve static frontend
 
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
+
 
 
 
