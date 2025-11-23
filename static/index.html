@@ -1,1 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>YouTube Downloader</title>
+  <meta name="description" content="Download YouTube videos and audio quickly and easily with our free online YouTube downloader.">
+  <meta name="keywords" content="YouTube downloader, download YouTube videos, free video downloader, mp3 converter, mp4 downloader">
+  <meta name="robots" content="index, follow">
+</head>
+<body>
+  <h1>🎬 YouTube Downloader</h1>
+  <input id="url" type="text" placeholder="Paste YouTube URL" size="50">
+  <button onclick="fetchMetadata()">Fetch Info</button>
 
+  <div id="info"></div>
+  <select id="formats"></select>
+  <button onclick="download()">Download</button>
+
+  <script>
+    async function fetchMetadata() {
+      const url = document.getElementById("url").value;
+      const res = await fetch(`/metadata?url=${encodeURIComponent(url)}`);
+      const data = await res.json();
+
+      if (data.error) {
+        document.getElementById("info").innerHTML = `<p style="color:red">${data.error}</p>`;
+        return;
+      }
+
+      document.getElementById("info").innerHTML =
+        `<h3>${data.title}</h3>
+         <p>Uploader: ${data.uploader}</p>
+         <p>Duration: ${data.duration}s</p>
+         <img src="${data.thumbnail}" width="200">`;
+
+      const select = document.getElementById("formats");
+      select.innerHTML = "";
+
+      // Default options
+      const bestVideo = document.createElement("option");
+      bestVideo.value = "bestvideo+bestaudio/best";
+      bestVideo.text = "Best Video+Audio (MP4)";
+      select.appendChild(bestVideo);
+
+      const bestAudio = document.createElement("option");
+      bestAudio.value = "bestaudio";
+      bestAudio.text = "Best Audio Only (MP3)";
+      select.appendChild(bestAudio);
+
+      // Add all other formats
+      data.formats.forEach(f => {
+        const opt = document.createElement("option");
+        opt.value = f.id;
+        opt.text = `${f.height ? f.height+"p " : ""}${f.ext} (${f.vcodec}/${f.acodec})`;
+        select.appendChild(opt);
+      });
+    }
+
+    function download() {
+      const url = document.getElementById("url").value;
+      const format = document.getElementById("formats").value || "bestvideo+bestaudio/best";
+      window.location.href = `/download?url=${encodeURIComponent(url)}&format_id=${format}`;
+    }
+  </script>
+</body>
+</html>
