@@ -54,7 +54,7 @@ def metadata(url: str = Query(...)):
 def download(url: str, format_id: str = Query("best")):
     try:
         # Fetch metadata for filename
-        with yt_dlp.YoutubeDL({'quiet': True,"cookiefile": cookies_path}) as ydl:
+        with yt_dlp.YoutubeDL({'quiet': True}) as ydl:
             info = ydl.extract_info(url, download=False)
             title = sanitize_filename(info.get("title", "video"))
 
@@ -74,6 +74,7 @@ def download(url: str, format_id: str = Query("best")):
             "--ffmpeg-location", os.path.join(BASE_DIR, "ffmpeg.exe"),
             "--concurrent-fragments", "16",
             "--extractor-args", "youtube:player_client=default",
+            "--cookies", cookies_path,
             "--force-overwrites",
             "--no-cache-dir",
         ]
@@ -129,6 +130,7 @@ def download(url: str, format_id: str = Query("best")):
 # Serve static frontend
 
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
+
 
 
 
