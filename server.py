@@ -25,7 +25,7 @@ def get_aria2_path():
 @app.get("/metadata")
 def metadata(url: str = Query(...)):
     try:
-        ydl_opts = {'quiet': True,"cookiefile": cookies_path}
+        ydl_opts = {'quiet': True,"cookiefile":("chrome")}
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
 
@@ -132,6 +132,7 @@ def download(url: str, format_id: str = Query("best")):
 # Serve static frontend
 
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
+
 
 
 
